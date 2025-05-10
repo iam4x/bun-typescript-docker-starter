@@ -1,0 +1,39 @@
+{
+  "name": "bun-typescript-docker-starter",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "start": "bun run dist/index.js",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "test": "bun test",
+    "dev": "bun run --watch src/index.js",
+    "lint": "bun run lint:eslint && bun run lint:tsc",
+    "lint:eslint": "eslint src",
+    "lint:tsc": "tsc --noEmit",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.1",
+    "@types/bun": "latest",
+    "@typescript-eslint/parser": "^8.31.0",
+    "eslint": "^9.25.1",
+    "eslint-config-prettier": "10.1.1",
+    "eslint-import-resolver-typescript": "4.3.1",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prettier": "^5.2.6",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-solid": "^0.14.5",
+    "globals": "^16.0.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.5.3",
+    "tsc-alias": "^1.8.15",
+    "typescript-eslint": "^8.31.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
