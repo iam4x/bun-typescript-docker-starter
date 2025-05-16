@@ -1,4 +1,4 @@
-FROM oven/bun:alpine
+FROM oven/bun:alpine AS builder
 
 WORKDIR /app
 
@@ -7,5 +7,14 @@ RUN bun install
 
 COPY . .
 RUN bun run build
+
+# Production stage
+FROM oven/bun:alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY package.json bun.lock ./
 
 CMD ["bun", "start"]
