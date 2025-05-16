@@ -1,0 +1,43 @@
+# fly.toml app configuration file generated for bun-typescript-docker-starter on 2025-05-16T15:06:15+04:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'bun-typescript-docker-starter'
+primary_region = 'sin'
+
+[build]
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[http_service.checks]]
+  interval = '30s'
+  grace_period = '5s'
+  method = 'GET'
+  path = '/health'
+  timeout = '3s'
+
+[[services.ports]]
+  handlers = ['http']
+  port = 80
+  force_https = true
+
+[[services.ports]]
+  handlers = ['tls', 'http']
+  port = 443
+
+[[vm]]
+  size = 'shared-cpu-1x'
+  memory = '256mb'
+  cpu_kind = 'shared'
+
+[[restart]]
+  policy = 'on-failure'
+  retries = 10
+  processes = ['app']
