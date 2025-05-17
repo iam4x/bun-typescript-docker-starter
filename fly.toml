@@ -16,15 +16,6 @@ primary_region = 'sin'
   min_machines_running = 0
   processes = ['app']
 
-[[services.ports]]
-  handlers = ['http']
-  port = 80
-  force_https = true
-
-[[services.ports]]
-  handlers = ['tls', 'http']
-  port = 443
-
 [checks]
   [checks.health_http]
     grace_period = '5s'
