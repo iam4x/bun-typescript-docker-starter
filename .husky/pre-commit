@@ -1,5 +1,13 @@
 echo "Running pre-commit hook..."
 
+# Run format check
+echo "Running format check..."
+bun run fmt:check
+
+# Run lint
+echo "Running lint..."
+bun run lint
+
 # Run tests
 echo "Running tests..."
 bun run test
