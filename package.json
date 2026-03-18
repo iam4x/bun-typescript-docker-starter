@@ -1,8 +1,8 @@
 {
   "name": "bun-typescript-docker-starter",
-  "module": "index.ts",
-  "type": "module",
   "private": true,
+  "type": "module",
+  "module": "index.ts",
   "exports": {
     ".": "./dist/index.js"
   },
@@ -11,27 +11,22 @@
     "build": "rm -rf dist && tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "test": "bun test",
     "dev": "bun run --watch src/index.ts",
-    "lint": "bun run lint:eslint && bun run lint:tsc",
-    "lint:eslint": "eslint src",
-    "lint:tsc": "tsc --noEmit",
+    "lint": "oxlint --type-aware --type-check .",
+    "lint:fix": "oxlint --fix .",
+    "fmt": "oxfmt .",
+    "fmt:check": "oxfmt --check .",
     "prepare": "husky"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.4",
     "@types/bun": "latest",
-    "@typescript-eslint/parser": "^8.57.1",
-    "eslint": "^9.39.4",
-    "eslint-config-prettier": "10.1.1",
-    "eslint-import-resolver-typescript": "4.3.1",
+    "eslint": "^9.39.1",
+    "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-prettier": "^5.5.5",
-    "globals": "^16.5.0",
     "husky": "^9.1.7",
-    "prettier": "^3.8.1",
+    "oxfmt": "latest",
+    "oxlint": "latest",
+    "oxlint-tsgolint": "latest",
     "tsc-alias": "^1.8.16",
-    "typescript-eslint": "^8.57.1"
-  },
-  "peerDependencies": {
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.3"
   }
 }

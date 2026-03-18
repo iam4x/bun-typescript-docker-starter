@@ -2,9 +2,9 @@ name: Run Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
@@ -23,6 +23,9 @@ jobs:
 
       - name: Run tests
         run: bun test
+
+      - name: Run format check
+        run: bun run fmt:check
 
       - name: Run lint
         run: bun run lint
