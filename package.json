@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "bun run dist/index.js",
-    "build": "rm -rf dist && tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "build": "bun build src/index.ts --outdir dist --target bun --env disable",
     "test": "bun test",
     "dev": "bun run --watch src/index.ts",
     "lint": "oxlint",
@@ -24,7 +24,6 @@
     "oxfmt": "^0.41.0",
     "oxlint": "^1.56.0",
     "oxlint-tsgolint": "^0.17.0",
-    "tsc-alias": "^1.8.16",
     "typescript": "^5.9.3"
   },
   "lint-staged": {
