@@ -16,6 +16,7 @@
   },
   "ignorePatterns": ["node_modules", "dist"],
   "rules": {
+    "no-nested-ternary": "error",
     "no-unexpected-multiline": "error",
     "constructor-super": "error",
     "for-direction": "error",
