@@ -20,10 +20,10 @@
   "devDependencies": {
     "@types/bun": "latest",
     "husky": "^9.1.7",
-    "lint-staged": "^16.4.0",
-    "oxfmt": "^0.41.0",
-    "oxlint": "^1.73.0",
-    "oxlint-tsgolint": "^0.24.0",
+    "lint-staged": "^17.3.0",
+    "oxfmt": "^0.62.0",
+    "oxlint": "^1.77.0",
+    "oxlint-tsgolint": "^7.0.2001",
     "typescript": "^7.0.2"
   },
   "lint-staged": {
