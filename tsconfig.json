@@ -2,19 +2,18 @@
   "compilerOptions": {
     // Enable latest features
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": ["bun"],
+    "types": ["bun", "vite/client"],
     "target": "ESNext",
     "module": "ESNext",
     "moduleDetection": "force",
-    "jsx": "react-jsx",
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
     "allowJs": true,
 
     // Bundler mode
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "declaration": true,
+    "noEmit": true,
 
     // Best practices
     "strict": true,
@@ -33,6 +32,12 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.js"],
+  "include": [
+    "src/**/*",
+    "client/**/*",
+    "scripts/**/*.ts",
+    "vite.config.ts",
+    "playwright.config.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

@@ -8,7 +8,13 @@ const TEMPLATE_ROOT = path.resolve(import.meta.dir, "..");
 
 // Files that belong to the scaffold tooling and must not end up in new projects
 const SCAFFOLD_FILES = new Set(["scripts/create.ts"]);
-const IGNORED_DIRS = new Set([".git", "node_modules", "dist", "coverage"]);
+const IGNORED_DIRS = new Set([
+  ".git",
+  "node_modules",
+  "dist",
+  "coverage",
+  ".verification",
+]);
 
 // Files where the template name gets replaced by the new project name
 const RENAME_FILES = new Set(["package.json", "bun.lock", "README.md"]);

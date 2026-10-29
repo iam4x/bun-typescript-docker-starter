@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
       - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
+        uses: oven-sh/setup-bun@v2
         with:
           bun-version: "1.4.4"
 
@@ -35,3 +35,42 @@ jobs:
 
       - name: Run build
         run: bun run build
+
+      - name: Run SPA build
+        run: bun run build:spa
+
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.4"
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Chromium
+        run: bunx --bun playwright install --with-deps chromium
+
+      - name: Verify server-only build
+        run: bun run verify server
+
+      - name: Verify production SPA
+        run: bun run verify spa
+
+      - name: Verify development updates
+        run: bun run verify dev
+
+      - name: Upload verification evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: verification-evidence
+          path: .verification/
+          include-hidden-files: true
+          retention-days: 7

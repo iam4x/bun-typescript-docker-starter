@@ -22,6 +22,8 @@ Dockerfile
 docker-compose*
 
 # Development/testing files
+.agents/
+.verification/
 *.test.*
 *.spec.*
 __tests__/
