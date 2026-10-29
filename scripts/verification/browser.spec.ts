@@ -86,10 +86,13 @@ test("client rendering, counter, routes, styles, and development updates", async
     path: join(evidence, "about-reloaded.png"),
     fullPage: true,
   });
-  await page.goto(`${url}/nested/unknown/path`);
-  await expect(
-    page.getByRole("heading", { name: "Page not found", exact: true }),
-  ).toBeVisible();
+  for (const path of ["/nested/unknown/path", "/apiary", "/healthcare"]) {
+    const response = await page.goto(`${url}${path}`);
+    assert.equal(response?.status(), 200, `Browser route ${path}`);
+    await expect(
+      page.getByRole("heading", { name: "Page not found", exact: true }),
+    ).toBeVisible();
+  }
   await page.getByRole("link", { name: "Back to home", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Start building.", exact: true }),

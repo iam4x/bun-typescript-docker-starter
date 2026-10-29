@@ -9,8 +9,8 @@ const frontend = await createViteServer({
     port: Number(process.env["PORT"] ?? 3000),
     strictPort: true,
     proxy: {
-      "/api": { target: backend.url.origin },
-      "/health": { target: backend.url.origin },
+      "^/api(?:/|\\?|$)": { target: backend.url.origin },
+      "^/health(?:\\?|$)": { target: backend.url.origin },
     },
   },
 });

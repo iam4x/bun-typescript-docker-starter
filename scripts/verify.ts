@@ -242,19 +242,25 @@ try {
   }
 
   const responses = [];
-  for (const path of ["/health", "/api", "/api/users", "/assets/missing.js"]) {
-    const response = await fetch(`${instance.url}${path}`, {
-      headers: { Accept: path.startsWith("/assets/") ? "*/*" : "text/html" },
+  for (const expected of [
+    { path: "/health", status: 200, body: "OK" },
+    { path: "/health?probe=1", status: 200, body: "OK" },
+    { path: "/api", status: 404, body: "Not Found" },
+    { path: "/api?probe=1", status: 404, body: "Not Found" },
+    { path: "/api/users", status: 404, body: "Not Found" },
+    { path: "/assets/missing.js", status: 404, body: "Not Found" },
+  ]) {
+    const response = await fetch(`${instance.url}${expected.path}`, {
+      headers: { Accept: "text/html" },
     });
     const body = await response.text();
-    responses.push({ path, status: response.status, body });
+    responses.push({ path: expected.path, status: response.status, body });
     await Bun.write(
       join(evidence, "http.json"),
       JSON.stringify(responses, null, 2),
     );
-    assert.equal(response.status, path === "/health" ? 200 : 404, path);
-    if (path !== "/assets/missing.js")
-      assert.equal(body, path === "/health" ? "OK" : "Not Found");
+    assert.equal(response.status, expected.status, expected.path);
+    assert.equal(body, expected.body, expected.path);
   }
   action(
     "server",

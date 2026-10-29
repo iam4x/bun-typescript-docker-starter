@@ -9,6 +9,7 @@ an unknown URL without losing access to the app.
 - `nav-home` returns through the `Home` link.
 - `nav-refresh` refreshes `/about` successfully.
 - `nav-missing` displays `Page not found` for `/nested/unknown/path`.
+- `nav-prefix` keeps `/apiary` and `/healthcare` as browser routes rather than proxying them to the backend.
 - `nav-recover` follows `Back to home` to the working home page.
 
 ## How to get to it (user POV)
