@@ -1,9 +1,5 @@
-import { serve } from "bun";
+import { join } from "node:path";
 
-serve({
-  port: process.env["PORT"] ?? 3000,
-  routes: {
-    "/health": new Response("OK"),
-    "/*": new Response("Not Found", { status: 404 }),
-  },
-});
+import { createServer } from "./server";
+
+createServer({ clientDirectory: join(import.meta.dir, "client") });
