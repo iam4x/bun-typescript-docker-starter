@@ -1,2 +1,3 @@
-bunx lint-staged
+bun fmt --staged
+bun check
 bun test
