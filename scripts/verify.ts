@@ -1,8 +1,7 @@
 #!/usr/bin/env bun
-import type { Browser, BrowserContext } from "@playwright/test";
-
 import assert from "node:assert/strict";
 import {
+  appendFileSync,
   closeSync,
   cpSync,
   mkdirSync,
@@ -10,12 +9,10 @@ import {
   openSync,
   readdirSync,
   rmSync,
-  writeSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, relative, resolve, sep } from "node:path";
-
-import { chromium, expect } from "@playwright/test";
+import { setTimeout } from "node:timers/promises";
 
 type Mode = "server" | "spa" | "dev";
 type Instance = { pid: number; url: string; mode: Mode; workspace: string };
@@ -93,21 +90,14 @@ const evidence = join(
 );
 mkdirSync(evidence, { recursive: true });
 const workspace = mkdtempSync(join(tmpdir(), "bun-app-verify-"));
-const children: Child[] = [];
+const children = new Set<Child>();
 const cleanupErrors: string[] = [];
-let browser: Browser | undefined;
-let context: BrowserContext | undefined;
 let cleaned = false;
 let appUrl: string | undefined;
 
 function action(feature: string, detail: string) {
   const entry = `${JSON.stringify({ time: new Date().toISOString(), feature, detail })}\n`;
-  const fd = openSync(join(evidence, "actions.jsonl"), "a");
-  try {
-    writeSync(fd, entry);
-  } finally {
-    closeSync(fd);
-  }
+  appendFileSync(join(evidence, "actions.jsonl"), entry);
 }
 
 function launch(args: string[], log: string, env = process.env) {
@@ -122,20 +112,18 @@ function launch(args: string[], log: string, env = process.env) {
       stderr: fd,
       detached: true,
     });
-    children.push(child);
+    children.add(child);
     return child;
   } finally {
     closeSync(fd);
   }
 }
 
-async function run(args: string[], log: string) {
-  const child = launch(args, log);
-  assert.equal(
-    await child.exited,
-    0,
-    `Command failed. Read ${join(evidence, log)}`,
-  );
+async function run(args: string[], log: string, env = process.env) {
+  const child = launch(args, log, env);
+  const status = await child.exited;
+  children.delete(child);
+  assert.equal(status, 0, `Command failed. Read ${join(evidence, log)}`);
 }
 
 function signalGroup(child: Child, signal: NodeJS.Signals) {
@@ -150,24 +138,13 @@ function signalGroup(child: Child, signal: NodeJS.Signals) {
 async function cleanup() {
   if (cleaned) return;
   cleaned = true;
-  if (context) {
-    try {
-      await context.tracing.stop({ path: join(evidence, "browser.trace.zip") });
-    } catch (error) {
-      cleanupErrors.push(String(error));
-    }
-  }
-  if (browser) {
-    try {
-      await browser.close();
-    } catch (error) {
-      cleanupErrors.push(String(error));
-    }
-  }
   for (const child of children) {
     try {
       signalGroup(child, "SIGTERM");
-      await Promise.race([child.exited, Bun.sleep(2000)]);
+      await Promise.race([
+        child.exited,
+        setTimeout(2000, undefined, { ref: false }),
+      ]);
       signalGroup(child, "SIGKILL");
       await child.exited;
     } catch (error) {
@@ -285,153 +262,19 @@ try {
   );
 
   if (mode !== "server") {
-    browser = await chromium.launch({
-      ...(process.env["PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH"]
-        ? { executablePath: process.env["PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH"] }
-        : {}),
-    });
-    context = await browser.newContext();
-    await context.tracing.start({ screenshots: true, snapshots: true });
-    const page = await context.newPage();
-    const errors: string[] = [];
-    page.on("pageerror", (error) => errors.push(error.message));
-    page.on("console", (message) =>
-      action("browser-console", `${message.type()}: ${message.text()}`),
-    );
-    await page.goto(instance.url);
-    await expect(
-      page.getByRole("heading", { name: "Start building.", exact: true }),
-    ).toBeVisible();
-    await page.screenshot({
-      path: join(evidence, "home-before.png"),
-      fullPage: true,
-    });
-    action("home", "Click Count is 0, then Count is 1.");
-    await page.getByRole("button", { name: "Count is 0", exact: true }).click();
-    await page.getByRole("button", { name: "Count is 1", exact: true }).click();
-    await expect(
-      page.getByRole("button", { name: "Count is 2", exact: true }),
-    ).toBeVisible();
-    assert.equal(
-      await page
-        .locator("main")
-        .evaluate((element) => getComputedStyle(element).display),
-      "grid",
-    );
-    assert.equal(
-      await page
-        .getByRole("button")
-        .evaluate((element) => getComputedStyle(element).paddingTop),
-      "12px",
-    );
-    await page.screenshot({
-      path: join(evidence, "home-after.png"),
-      fullPage: true,
-    });
-    await Bun.write(
-      join(evidence, "home.aria.txt"),
-      await page.locator("body").ariaSnapshot(),
-    );
-
-    action(
-      "navigation",
-      "Choose About, reload /about, then visit an unknown nested route.",
-    );
-    await page.getByRole("link", { name: "About", exact: true }).click();
-    await expect(
-      page.getByRole("heading", { name: "About this starter", exact: true }),
-    ).toBeVisible();
-    await page.getByRole("link", { name: "Home", exact: true }).click();
-    await expect(
-      page.getByRole("heading", { name: "Start building.", exact: true }),
-    ).toBeVisible();
-    await page.getByRole("link", { name: "About", exact: true }).click();
-    await expect(
-      page.getByRole("heading", { name: "About this starter", exact: true }),
-    ).toBeVisible();
-    await page.reload();
-    await expect(
-      page.getByRole("heading", { name: "About this starter", exact: true }),
-    ).toBeVisible();
-    await page.screenshot({
-      path: join(evidence, "about-reloaded.png"),
-      fullPage: true,
-    });
-    await page.goto(`${instance.url}/nested/unknown/path`);
-    await expect(
-      page.getByRole("heading", { name: "Page not found", exact: true }),
-    ).toBeVisible();
-    await page.getByRole("link", { name: "Back to home", exact: true }).click();
-    await expect(
-      page.getByRole("heading", { name: "Start building.", exact: true }),
-    ).toBeVisible();
-    await page.setViewportSize({ width: 375, height: 812 });
-    assert.equal(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= innerWidth,
-      ),
-      true,
-    );
-    await page.screenshot({
-      path: join(evidence, "home-mobile.png"),
-      fullPage: true,
-    });
-
-    const noJS = await browser.newContext({ javaScriptEnabled: false });
-    try {
-      const shell = await noJS.newPage();
-      const response = await shell.goto(instance.url);
-      assert.equal(response?.status(), 200);
-      await expect(shell.locator("#root")).toBeEmpty();
-      await expect(shell.locator("h1")).toHaveCount(0);
-      await Bun.write(join(evidence, "shell.html"), await response.text());
-      action(
-        "home",
-        "With JavaScript disabled, #root is empty and no heading is rendered.",
-      );
-    } finally {
-      await noJS.close();
-    }
-
-    if (mode === "dev") {
-      const source = Bun.file(join(workspace, "client/app.tsx"));
-      const original = await source.text();
-      assert.ok(
-        original.includes("Start building.") &&
-          original.includes("grid min-h-screen"),
-        "Update the development feature recipe for the current app.",
-      );
-      action(
-        "development",
-        "In the disposable copy, change the heading and add rounded-[37px] to main.",
-      );
-      await Bun.write(
-        source,
-        original
-          .replace("Start building.", "Reload verified.")
-          .replace("grid min-h-screen", "rounded-[37px] grid min-h-screen"),
-      );
-      await expect(
-        page.getByRole("heading", { name: "Reload verified.", exact: true }),
-      ).toBeVisible({ timeout: 15_000 });
-      await expect(page.locator("main")).toHaveCSS("border-radius", "37px", {
-        timeout: 15_000,
-      });
-      await page.screenshot({
-        path: join(evidence, "development-updated.png"),
-        fullPage: true,
-      });
-      await Bun.write(
-        join(evidence, "development.aria.txt"),
-        await page.locator("body").ariaSnapshot(),
-      );
-    }
-    assert.deepEqual(errors, [], "Unhandled browser exceptions");
-    await Bun.write(
-      join(evidence, "browser-errors.json"),
-      JSON.stringify(errors),
+    await run(
+      [process.execPath, "x", "--bun", "playwright", "test"],
+      "browser.log",
+      {
+        ...process.env,
+        VERIFY_URL: instance.url,
+        VERIFY_MODE: mode,
+        VERIFY_EVIDENCE: evidence,
+        VERIFY_WORKSPACE: workspace,
+      },
     );
   }
+
   passed = true;
 } catch (error) {
   await Bun.write(

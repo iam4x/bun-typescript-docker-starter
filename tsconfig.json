@@ -32,6 +32,12 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*", "client/**/*", "scripts/**/*.ts", "vite.config.ts"],
+  "include": [
+    "src/**/*",
+    "client/**/*",
+    "scripts/**/*.ts",
+    "vite.config.ts",
+    "playwright.config.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

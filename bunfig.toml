@@ -2,7 +2,7 @@
 minimumReleaseAge = 172800
 
 [test]
-pathIgnorePatterns = ["**/*.test.tsx"]
+pathIgnorePatterns = ["**/*.test.tsx", "scripts/verification/**"]
 
 [fmt]
 printWidth = 80

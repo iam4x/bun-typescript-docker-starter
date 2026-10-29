@@ -90,7 +90,7 @@ Every run prints its unique directory under `.verification/`. Keep these files:
 - `home-before.png`, `home-after.png`, `home-mobile.png`, and `home.aria.txt` show counter state and layout.
 - `about-reloaded.png` proves the deep-link refresh.
 - `shell.html` records the HTML received without JavaScript.
-- `browser.trace.zip` records browser actions, network activity, and DOM snapshots.
+- `browser/**/trace.zip` records browser actions, network activity, and DOM snapshots through Playwright's test runner. Failed tests also retain an automatic screenshot there.
 - `development-updated.png` and `development.aria.txt` prove live updates in dev mode.
 - `result.json` states the outcome. `failure.txt` records a failed attempt.
 - `cleanup.json` records teardown without removing the proof.
@@ -133,7 +133,7 @@ To inspect a browser trace:
 bunx playwright show-trace
 ```
 
-Open one retained `browser.trace.zip` in the trace viewer. The helper and this skill travel
+Open one retained `trace.zip` in the trace viewer. The helper and this skill travel
 with `bun run create`. As the app grows, update the feature map and corresponding
 journeys together. Use `/maintain-verification-skill` to audit them against the
 current app. Keep baseline journey failures visible until their replacements
