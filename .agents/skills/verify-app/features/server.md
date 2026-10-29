@@ -8,7 +8,7 @@ remain separate from browser navigation.
 - `server-health` returns status 200 and body `OK` from `/health`.
 - `server-only` returns 404 from `/` without client output.
 - `server-api` returns 404 from the unimplemented `/api` and `/api/users` paths.
-- `server-assets` serves built JS and CSS with their correct MIME types and immutable caching.
+- `server-assets` serves files listed in the Vite build manifest with their correct MIME types and immutable caching. Unhashed public files use `no-cache`, including files under `/assets`.
 - `server-shell` serves navigation HTML with `Cache-Control: no-cache`.
 - `server-missing` returns 404 for missing assets and unsupported methods.
 - `server-public` serves stable public files without immutable caching.

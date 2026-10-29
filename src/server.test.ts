@@ -7,10 +7,18 @@ import { createServer } from "./server";
 
 const directory = mkdtempSync(join(tmpdir(), "bun-starter-spa-"));
 mkdirSync(join(directory, "assets"));
+mkdirSync(join(directory, ".vite"));
 const html = '<!doctype html><html><body><div id="root"></div></body></html>';
 await Bun.write(join(directory, "index.html"), html);
 await Bun.write(join(directory, "assets/app-123.js"), 'console.log("client");');
 await Bun.write(join(directory, "assets/app-123.css"), "body{margin:0}");
+await Bun.write(join(directory, "assets/logo.svg"), "<svg/>");
+await Bun.write(
+  join(directory, ".vite/manifest.json"),
+  JSON.stringify({
+    "index.html": { file: "assets/app-123.js", css: ["assets/app-123.css"] },
+  }),
+);
 await Bun.write(join(directory, "robots.txt"), "User-agent: *\nAllow: /\n");
 await Bun.write(
   join(directory, "social card.svg"),
@@ -106,6 +114,7 @@ describe("SPA", () => {
   test("serves public files without immutable caching", async () => {
     for (const { path, body } of [
       { path: "/robots.txt", body: "User-agent: *\nAllow: /\n" },
+      { path: "/assets/logo.svg", body: "<svg/>" },
       {
         path: "/social%20card.svg",
         body: '<svg xmlns="http://www.w3.org/2000/svg"/>',

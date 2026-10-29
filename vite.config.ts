@@ -32,6 +32,7 @@ export default defineConfig({
   ],
   envPrefix: "PUBLIC_",
   build: {
+    manifest: true,
     outDir: fileURLToPath(new URL("./dist/client", import.meta.url)),
     emptyOutDir: true,
   },
