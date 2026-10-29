@@ -92,7 +92,7 @@ mkdirSync(evidence, { recursive: true });
 const workspace = mkdtempSync(join(tmpdir(), "bun-app-verify-"));
 const children = new Set<Child>();
 const cleanupErrors: string[] = [];
-let cleaned = false;
+let cleanupPromise: Promise<void> | undefined;
 let appUrl: string | undefined;
 
 function action(feature: string, detail: string) {
@@ -135,9 +135,11 @@ function signalGroup(child: Child, signal: NodeJS.Signals) {
   }
 }
 
-async function cleanup() {
-  if (cleaned) return;
-  cleaned = true;
+function cleanup() {
+  return (cleanupPromise ??= cleanupResources());
+}
+
+async function cleanupResources() {
   for (const child of children) {
     try {
       signalGroup(child, "SIGTERM");
