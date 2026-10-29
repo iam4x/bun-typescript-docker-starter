@@ -36,6 +36,7 @@ To run checks:
 ```bash
 bun fmt --check
 bun check
+bun run lint
 ```
 
 To format files:
@@ -44,6 +45,15 @@ To format files:
 bun fmt
 ```
 
-The pre-commit hook formats staged files, checks types, and runs tests.
+To fix lint issues:
+
+```bash
+bun run lint:fix
+```
+
+Bun formats files and checks TypeScript types. Oxlint enforces the lint rules in
+`.oxlintrc.json`, including type-aware linting.
+
+The pre-commit hook formats staged files, runs Oxlint, checks types, and runs tests.
 
 This project was created using `bun init` in bun v1.2.10. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.

@@ -15,6 +15,8 @@
     "test": "bun test",
     "dev": "bun run --watch src/index.ts",
     "check": "bun check",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "fmt": "bun fmt",
     "fmt:check": "bun fmt --check",
     "prepare": "husky",
@@ -23,6 +25,8 @@
   "devDependencies": {
     "@types/bun": "latest",
     "husky": "^9.1.7",
+    "oxlint": "^1.90.0",
+    "oxlint-tsgolint": "^7.0.2005",
     "typescript": "^7.0.2"
   }
 }
