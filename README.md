@@ -17,6 +17,8 @@ Options:
 
 <!-- scaffold:end -->
 
+Requires Bun 1.4.4 or newer.
+
 To install dependencies:
 
 ```bash
@@ -32,14 +34,16 @@ bun run dev
 To run checks:
 
 ```bash
-bun run fmt:check
-bun run lint
+bun fmt --check
+bun check
 ```
 
 To format files:
 
 ```bash
-bun run fmt
+bun fmt
 ```
+
+The pre-commit hook formats staged files, checks types, and runs tests.
 
 This project was created using `bun init` in bun v1.2.10. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
