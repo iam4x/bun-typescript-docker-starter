@@ -66,7 +66,8 @@ an old failure. Read `failure.txt`, `server.log`, and `build.log` first.
 
 ## Drive
 
-[The executable helper](../../../scripts/verify.ts) uses Playwright roles and
+[The executable helper](../../../scripts/verify.ts) launches
+[Playwright journeys](../../../scripts/verification/browser.spec.ts) that use roles and
 accessible names from the real app. It clicks `Count is 0` and `Count is 1`,
 requires `Count is 2`, follows `About`, refreshes `/about`, and returns home
 through the client 404 page. It checks computed Tailwind styles, a mobile viewport,

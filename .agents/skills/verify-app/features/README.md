@@ -31,8 +31,9 @@ the relevant `Gotchas` when it is a lasting constraint.
 
 ## Extending the map
 
-Keep the four H2s used by existing feature files. Add a row here and a journey
-to `scripts/verify.ts` for each new user-facing behavior. Use current accessible
+Keep the four H2s used by existing feature files. Add a row here and a browser
+journey to `scripts/verification/browser.spec.ts`, or an HTTP contract case to
+`scripts/verify.ts`, for each new user-facing behavior. Use current accessible
 names and routes. Record setup for new auth, seed data, or services. If a feature
 sends messages, charges money, or changes shared data, define an authorized test
 boundary before automating it.

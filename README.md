@@ -157,3 +157,6 @@ its processes and removes the copy. Screenshots, Playwright traces, HTTP results
 and command logs remain in the printed directory under `.verification/`.
 Update the feature map and verification journeys as you replace the demo app.
 Use `/maintain-verification-skill` to audit that coverage as the project grows.
+
+CI runs all three verification modes in Chromium and retains their evidence as
+a `verification-evidence` artifact, including failed runs.
